@@ -11,14 +11,15 @@ public class ControllerCar : MonoBehaviour
     public KeyCode brakeKey;
     public KeyCode accelerateKey;
     public KeyCode driftKey;
-    private bool isAccelerating;
-    private bool isBraking;
+    public bool isAccelerating;
+    public bool isBraking;
     private bool isDrifting;
     public float accelerateForce;
     private float accelerateBaseForce = 0f;
     public float brakeForce;
     private float brakeBaseForce = -5f;
-    private float maxAccelerateForce = 150f;
+    private float maxAccelerateForce = 180f;
+    private float accelerateThreshold = 150f;
 
     private float turnInput;
     public float turnSpeed;
@@ -61,26 +62,38 @@ public class ControllerCar : MonoBehaviour
             transform.Rotate(0, newRotation, 0, Space.World);
 
             // check if card is less than top speed
-            if (accelerateForce < maxAccelerateForce)
+            if (accelerateForce < maxAccelerateForce && accelerateForce < accelerateThreshold)
             {
-                accelerateForce += 2;
+                accelerateForce += 1;
             }
-        }   
-        else if (isBraking)
+            // accelerate slower if getting closer to top speed
+            else if (accelerateForce < maxAccelerateForce)
+            {
+                accelerateForce += 0.5f;
+            }
+        } 
+        else if (isBraking || accelerateForce > 0)
         {
-            float newRotation = turnInput * turnSpeed * Time.deltaTime * -1;
+            //float newRotation = turnInput * turnSpeed * Time.deltaTime * -1;
+            float newRotation = turnInput * turnSpeed * Time.deltaTime;
             transform.Rotate(0, newRotation, 0, Space.World);
+
+            // decelerate
+            accelerateForce += -1;
         }
 
 
         // check for deacceleration
-        if (!isAccelerating && accelerateForce > 0)
-        {
-            accelerateForce += -2;
-        }
+        //if (!isAccelerating && accelerateForce > 0)
+        //{
+        //    accelerateForce += -1;
+        //}
 
+        
+        // add the current acceleration force
         sphereRB.AddForce(transform.forward * accelerateForce);
         
+        // check if brake force is needed
         if (isBraking)
         {
             sphereRB.AddForce(transform.forward * brakeForce);
