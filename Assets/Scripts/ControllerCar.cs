@@ -15,7 +15,10 @@ public class ControllerCar : MonoBehaviour
     private bool isBraking;
     private bool isDrifting;
     public float accelerateForce;
+    private float accelerateBaseForce = 0f;
     public float brakeForce;
+    private float brakeBaseForce = -5f;
+    private float maxAccelerateForce = 150f;
 
     private float turnInput;
     public float turnSpeed;
@@ -45,7 +48,7 @@ public class ControllerCar : MonoBehaviour
         turnInput = Input.GetAxisRaw("Horizontal");
 
         // check if car is accelerating/braking
-        accelerateForce = isAccelerating ? 100f : 0f;
+        // accelerateForce = isAccelerating ? 100f : 0f;
         brakeForce = isBraking ? -50f : 0f;
 
         // set car position to sphere
@@ -56,11 +59,24 @@ public class ControllerCar : MonoBehaviour
         {
             float newRotation = turnInput * turnSpeed * Time.deltaTime;
             transform.Rotate(0, newRotation, 0, Space.World);
-        }
+
+            // check if card is less than top speed
+            if (accelerateForce < maxAccelerateForce)
+            {
+                accelerateForce += 2;
+            }
+        }   
         else if (isBraking)
         {
             float newRotation = turnInput * turnSpeed * Time.deltaTime * -1;
             transform.Rotate(0, newRotation, 0, Space.World);
+        }
+
+
+        // check for deacceleration
+        if (!isAccelerating && accelerateForce > 0)
+        {
+            accelerateForce += -2;
         }
 
         sphereRB.AddForce(transform.forward * accelerateForce);

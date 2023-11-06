@@ -773,5 +773,5 @@ MonoBehaviour:
   driftKey: 106
   accelerateForce: 0
   brakeForce: 0
-  turnSpeed: 100
+  turnSpeed: 60
   sphereRB: {fileID: 816488906}
