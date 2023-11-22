@@ -14,6 +14,7 @@ public class ControllerCar : MonoBehaviour
     public bool isAccelerating;
     public bool isBraking;
     private bool isDrifting;
+    private bool isCarGrounded;
     public float accelerateForce;
     private float accelerateBaseForce = 0f;
     public float brakeForce;
@@ -23,14 +24,21 @@ public class ControllerCar : MonoBehaviour
 
     private float turnInput;
     public float turnSpeed;
+    public float airDrag;
+    public float groundDrag;
+    public float alignToGroundTime;
     
     public Rigidbody sphereRB;
+    public Rigidbody carRB;
+
+    public LayerMask groundLayer;
 
     // Start is called before the first frame update
     void Start()
     {
         // deatch sphere rigidbody from car
         sphereRB.transform.parent = null;
+        carRB.transform.parent = null;
     }
 
     // Update is called once per frame
@@ -82,6 +90,12 @@ public class ControllerCar : MonoBehaviour
             accelerateForce += -1;
         }
 
+        // limit reverse speed
+        if (accelerateForce <= 0)
+        {
+            accelerateForce = 0;
+        }
+
 
         // check for deacceleration
         //if (!isAccelerating && accelerateForce > 0)
@@ -90,13 +104,44 @@ public class ControllerCar : MonoBehaviour
         //}
 
         
-        // add the current acceleration force
-        sphereRB.AddForce(transform.forward * accelerateForce);
         
+
+        // raycast ground check
+        RaycastHit hit;
+        isCarGrounded = Physics.Raycast(transform.position, -transform.up, out hit, 1f, groundLayer);
+
+        // rotate car to be parallel to ground
+        Quaternion toRotateto = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+        transform.rotation = Quaternion.Slerp(transform.rotation, toRotateto, alignToGroundTime * Time.deltaTime);
+
+        if (isCarGrounded)
+        {
+            sphereRB.drag = groundDrag;
+        }
+        else
+        {
+            sphereRB.drag = airDrag;
+        }
+
+        // add the current acceleration force
+        if (isCarGrounded)
+        {
+            // move car
+            sphereRB.AddForce(transform.forward * accelerateForce);
+        }
+        else
+        {
+            // add extra gravity if car is in air
+            sphereRB.AddForce(transform.up * -30f);
+        }
+
         // check if brake force is needed
         if (isBraking)
         {
             sphereRB.AddForce(transform.forward * brakeForce);
         }
+
+        carRB.MoveRotation(transform.rotation);
+
     }
 }
