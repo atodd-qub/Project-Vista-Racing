@@ -13,7 +13,7 @@ public class ControllerCar : MonoBehaviour
     public KeyCode driftKey;
     public bool isAccelerating;
     public bool isBraking;
-    private bool isDrifting;
+    public bool isDrifting;
     private bool isCarGrounded;
     public float accelerateForce;
     private float accelerateBaseForce = 0f;

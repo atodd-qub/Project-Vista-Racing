@@ -1626,12 +1626,13 @@ MonoBehaviour:
   driftKey: 106
   isAccelerating: 0
   isBraking: 0
+  isDrifting: 0
   accelerateForce: 0
   brakeForce: 0
   turnSpeed: 50
   airDrag: 0.1
   groundDrag: 4
-  alignToGroundTime: 4
+  alignToGroundTime: 2
   sphereRB: {fileID: 816488906}
   carRB: {fileID: 1379802328}
   groundLayer:
@@ -1856,7 +1857,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 436152, guid: d995f875a84ca0f4c952dd644d6dbd0e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 436152, guid: d995f875a84ca0f4c952dd644d6dbd0e, type: 3}
       propertyPath: m_LocalPosition.z
