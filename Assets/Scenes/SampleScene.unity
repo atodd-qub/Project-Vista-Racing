@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 8167abc2117f054458b52695fa865789, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.23441184, g: 0.31172243, b: 0.75134903, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -990,6 +990,11 @@ MonoBehaviour:
   player: {fileID: 1881334025}
   offset: {x: 0, y: 2.5, z: -4.5}
   rotationSpeed: 20
+--- !u!1 &1057453311 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6183048251904429594, guid: a82f70a5f0178974093910fc6fd84c38, type: 3}
+  m_PrefabInstance: {fileID: 1714693533}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1379802325
 GameObject:
   m_ObjectHideFlags: 0
@@ -1407,6 +1412,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6810930330064475296, guid: a82f70a5f0178974093910fc6fd84c38, type: 3}
   m_PrefabInstance: {fileID: 1714693533}
   m_PrefabAsset: {fileID: 0}
+--- !u!111 &1714693536
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057453311}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 6d714760a85287d42a583ed03e480ceb, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 6d714760a85287d42a583ed03e480ceb, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1001 &1822987913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1632,12 +1653,15 @@ MonoBehaviour:
   turnSpeed: 50
   airDrag: 0.1
   groundDrag: 4
-  alignToGroundTime: 2
+  alignToGroundTime: 4
+  leftDrift: {fileID: 0}
+  rightDrift: {fileID: 0}
   sphereRB: {fileID: 816488906}
   carRB: {fileID: 1379802328}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  carAnim: {fileID: 1714693536}
 --- !u!1 &2013350121
 GameObject:
   m_ObjectHideFlags: 0

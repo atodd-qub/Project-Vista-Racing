@@ -19,19 +19,32 @@ public class ControllerCar : MonoBehaviour
     private float accelerateBaseForce = 0f;
     public float brakeForce;
     private float brakeBaseForce = -5f;
-    private float maxAccelerateForce = 180f;
-    private float accelerateThreshold = 150f;
+    private float maxAccelerateForce = 210f;
+    private float accelerateThreshold = 160f;
 
     private float turnInput;
     public float turnSpeed;
     public float airDrag;
     public float groundDrag;
     public float alignToGroundTime;
+
+    //private float steerDirection;
+    private float driftTime;
+    private bool driftLeft = false;
+    private bool driftRight = false;
+    private float outwardsDriftForce = 500;
+    private float driftDirection;
+    private bool isSliding = false;
+
+    public Transform leftDrift;
+    public Transform rightDrift;
+
     
     public Rigidbody sphereRB;
     public Rigidbody carRB;
 
     public LayerMask groundLayer;
+    public Animation carAnim;
 
     // Start is called before the first frame update
     void Start()
@@ -72,7 +85,7 @@ public class ControllerCar : MonoBehaviour
             // check if card is less than top speed
             if (accelerateForce < maxAccelerateForce && accelerateForce < accelerateThreshold)
             {
-                accelerateForce += 1;
+                accelerateForce += 2;
             }
             // accelerate slower if getting closer to top speed
             else if (accelerateForce < maxAccelerateForce)
@@ -96,16 +109,6 @@ public class ControllerCar : MonoBehaviour
             accelerateForce = 0;
         }
 
-
-        // check for deacceleration
-        //if (!isAccelerating && accelerateForce > 0)
-        //{
-        //    accelerateForce += -1;
-        //}
-
-        
-        
-
         // raycast ground check
         RaycastHit hit;
         isCarGrounded = Physics.Raycast(transform.position, -transform.up, out hit, 1f, groundLayer);
@@ -121,6 +124,54 @@ public class ControllerCar : MonoBehaviour
         else
         {
             sphereRB.drag = airDrag;
+        }
+
+        // drifting
+        if (isDrifting && isCarGrounded)
+        {
+            //transform.GetComponent<Animator>().SetTrigger("Hop");
+            //carAnim.Play("Hop");
+            if (turnInput < 0)
+            {
+                driftLeft = true;
+                driftRight = false;
+            }
+            else if (turnInput > 0)
+            {
+                driftLeft = false;
+                driftRight = true;
+            }
+
+            if (accelerateForce > 40 && turnInput != 0)
+            {
+                //TO DO: particle effects
+                // drift in correct direction
+                if (driftLeft && !driftRight)
+                {
+                    driftDirection = turnInput < 0 ? -1.5f : -0.5f;
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, -20f, 0), 8f * Time.deltaTime);
+
+                    if (isCarGrounded)
+                    {
+                        sphereRB.AddForce(transform.right * outwardsDriftForce * Time.deltaTime, ForceMode.Acceleration);
+                    }
+                }
+                else if (driftRight && !driftLeft)
+                {
+                    driftDirection = turnInput < 0 ? 1.5f : 0.5f;
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 20f, 0), 8f * Time.deltaTime);
+
+                    if (isCarGrounded)
+                    {
+                        sphereRB.AddForce(transform.right * -outwardsDriftForce * Time.deltaTime, ForceMode.Acceleration);
+                    }
+                }
+                else
+                {
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0f, 0), 8f * Time.deltaTime);
+                }
+
+            }
         }
 
         // add the current acceleration force
