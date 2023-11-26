@@ -22,19 +22,21 @@ public class ControllerCar : MonoBehaviour
     private float maxAccelerateForce = 210f;
     private float accelerateThreshold = 160f;
 
-    private float turnInput;
+    public float turnInput;//temp pub
     public float turnSpeed;
     public float airDrag;
     public float groundDrag;
     public float alignToGroundTime;
+    private float steerAmount;
 
     //private float steerDirection;
     private float driftTime;
-    private bool driftLeft = false;
-    private bool driftRight = false;
+    public bool driftLeft = false;//temp pub
+    public bool driftRight = false;//temp pub
     private float outwardsDriftForce = 500;
-    private float driftDirection;
+    public float driftDirection;//temp pub
     private bool isSliding = false;
+    private Vector3 steerDirVect;
 
     public Transform leftDrift;
     public Transform rightDrift;
@@ -76,56 +78,6 @@ public class ControllerCar : MonoBehaviour
         // set car position to sphere
         transform.position = sphereRB.transform.position;
 
-        // set cars rotation
-        if (isAccelerating)
-        {
-            float newRotation = turnInput * turnSpeed * Time.deltaTime;
-            transform.Rotate(0, newRotation, 0, Space.World);
-
-            // check if card is less than top speed
-            if (accelerateForce < maxAccelerateForce && accelerateForce < accelerateThreshold)
-            {
-                accelerateForce += 2;
-            }
-            // accelerate slower if getting closer to top speed
-            else if (accelerateForce < maxAccelerateForce)
-            {
-                accelerateForce += 0.5f;
-            }
-        } 
-        else if (isBraking || accelerateForce > 0)
-        {
-            //float newRotation = turnInput * turnSpeed * Time.deltaTime * -1;
-            float newRotation = turnInput * turnSpeed * Time.deltaTime;
-            transform.Rotate(0, newRotation, 0, Space.World);
-
-            // decelerate
-            accelerateForce += -1;
-        }
-
-        // limit reverse speed
-        if (accelerateForce <= 0)
-        {
-            accelerateForce = 0;
-        }
-
-        // raycast ground check
-        RaycastHit hit;
-        isCarGrounded = Physics.Raycast(transform.position, -transform.up, out hit, 1f, groundLayer);
-
-        // rotate car to be parallel to ground
-        Quaternion toRotateto = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, toRotateto, alignToGroundTime * Time.deltaTime);
-
-        if (isCarGrounded)
-        {
-            sphereRB.drag = groundDrag;
-        }
-        else
-        {
-            sphereRB.drag = airDrag;
-        }
-
         // drifting
         if (isDrifting && isCarGrounded)
         {
@@ -158,7 +110,7 @@ public class ControllerCar : MonoBehaviour
                 }
                 else if (driftRight && !driftLeft)
                 {
-                    driftDirection = turnInput < 0 ? 1.5f : 0.5f;
+                    driftDirection = turnInput > 0 ? 1.5f : 0.5f;
                     transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 20f, 0), 8f * Time.deltaTime);
 
                     if (isCarGrounded)
@@ -172,6 +124,85 @@ public class ControllerCar : MonoBehaviour
                 }
 
             }
+        }
+        else if (!isDrifting || accelerateForce < 40)
+        {
+            // if player is no longer drifting...
+            // or car is going to slow to drift...
+            // give boost
+
+            // reset everything
+            driftDirection = 0;
+            driftLeft = false;
+            driftRight = false;
+            driftTime = 0;
+        }
+
+        // set acceleration force
+        if (isAccelerating)
+        {
+            // check if card is less than top speed
+            if (accelerateForce < maxAccelerateForce && accelerateForce < accelerateThreshold)
+            {
+                accelerateForce += 2;
+            }
+            // accelerate slower if getting closer to top speed
+            else if (accelerateForce < maxAccelerateForce)
+            {
+                accelerateForce += 0.5f;
+            }
+        } 
+        else if (isBraking || accelerateForce > 0)
+        {
+            // decelerate
+            accelerateForce += -1;
+        }
+
+        // set car's rotation
+        float newRotation;
+        if (isDrifting)
+        {
+            newRotation = driftDirection * turnSpeed * Time.deltaTime;
+        }
+        else
+        {
+            newRotation = turnInput * turnSpeed * Time.deltaTime;
+        }
+        transform.Rotate(0, newRotation, 0, Space.Self);
+        //since handling is supposed to be stronger when car is moving slower, we adjust steerAmount depending on the real speed of the car, and then rotate the car on its y axis with steerAmount
+        /*if (isDrifting)
+        {
+            steerAmount = accelerateForce > 30 ? accelerateForce / 4 * driftDirection : steerAmount = accelerateForce / 1.5f * driftDirection;
+        }
+        else
+        {
+            steerAmount = accelerateForce > 30 ? accelerateForce / 4 * turnInput : steerAmount = accelerateForce / 1.5f * turnInput;
+        }
+        steerDirVect = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + steerAmount, transform.eulerAngles.z);
+        transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, steerDirVect, 3 * Time.deltaTime);
+        */
+
+        // limit reverse speed
+        if (accelerateForce <= 0)
+        {
+            accelerateForce = 0;
+        }
+
+        // raycast ground check
+        RaycastHit hit;
+        isCarGrounded = Physics.Raycast(transform.position, -transform.up, out hit, 1f, groundLayer);
+
+        // rotate car to be parallel to ground
+        Quaternion toRotateto = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+        transform.rotation = Quaternion.Slerp(transform.rotation, toRotateto, alignToGroundTime * Time.deltaTime);
+
+        if (isCarGrounded)
+        {
+            sphereRB.drag = groundDrag;
+        }
+        else
+        {
+            sphereRB.drag = airDrag;
         }
 
         // add the current acceleration force
@@ -192,6 +223,7 @@ public class ControllerCar : MonoBehaviour
             sphereRB.AddForce(transform.forward * brakeForce);
         }
 
+        // move rb roation of car model to match overall rotation
         carRB.MoveRotation(transform.rotation);
 
     }
