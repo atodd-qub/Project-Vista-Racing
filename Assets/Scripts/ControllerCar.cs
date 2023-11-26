@@ -35,8 +35,7 @@ public class ControllerCar : MonoBehaviour
     public bool driftRight = false;//temp pub
     private float outwardsDriftForce = 500;
     public float driftDirection;//temp pub
-    private bool isSliding = false;
-    private Vector3 steerDirVect;
+    private bool driftDirLock;
 
     public Transform leftDrift;
     public Transform rightDrift;
@@ -83,24 +82,32 @@ public class ControllerCar : MonoBehaviour
         {
             //transform.GetComponent<Animator>().SetTrigger("Hop");
             //carAnim.Play("Hop");
-            if (turnInput < 0)
+            if (turnInput < 0 && !driftDirLock)
             {
                 driftLeft = true;
                 driftRight = false;
+                driftDirLock = true;
             }
-            else if (turnInput > 0)
+            else if (turnInput > 0 && !driftDirLock)
             {
                 driftLeft = false;
                 driftRight = true;
+                driftDirLock = true;
             }
 
-            if (accelerateForce > 40 && turnInput != 0)
+            if (accelerateForce > 40)
             {
-                //TO DO: particle effects
+                // start drift timer
+                driftTime += Time.deltaTime;
+
                 // drift in correct direction
                 if (driftLeft && !driftRight)
                 {
                     driftDirection = turnInput < 0 ? -1.5f : -0.5f;
+                    if (turnInput == 1) //if holding other direction
+                    {
+                        driftDirection = -0.3f;
+                    }
                     transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, -20f, 0), 8f * Time.deltaTime);
 
                     if (isCarGrounded)
@@ -111,6 +118,10 @@ public class ControllerCar : MonoBehaviour
                 else if (driftRight && !driftLeft)
                 {
                     driftDirection = turnInput > 0 ? 1.5f : 0.5f;
+                    if (turnInput == -1) //if holding other direction
+                    {
+                        driftDirection = 0.3f;
+                    }
                     transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 20f, 0), 8f * Time.deltaTime);
 
                     if (isCarGrounded)
@@ -123,17 +134,56 @@ public class ControllerCar : MonoBehaviour
                     transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 0f, 0), 8f * Time.deltaTime);
                 }
 
+                //TO DO: particle effects
+                if (driftTime >= 1.5 && driftTime < 3)
+                {
+                    //TO DO
+                }
+                if (driftTime >= 3 && driftTime < 6.5)
+                {
+                    // TO DO
+                }
+                if (driftTime >= 6.5)
+                {
+                    // TO DO
+                }
+
             }
         }
         else if (!isDrifting || accelerateForce < 40)
         {
             // if player is no longer drifting...
-            // or car is going to slow to drift...
+            // or car is going too slow to drift...
             // give boost
+            if (driftTime >= 1.5 && driftTime < 3)
+            {
+                // TO DO: Particles
+
+                // boost
+                Debug.Log("driftTime: " + driftTime);
+                StartCoroutine(Boost(50, 0.5f));
+            }
+            if (driftTime >= 3 && driftTime < 6.5)
+            {
+                // TO DO: Particles
+
+                // boost
+                Debug.Log("driftTime: " + driftTime);
+                StartCoroutine(Boost(100, 0.75f));
+            }
+            if (driftTime >= 6.5)
+            {
+                // TO DO: Particles
+
+                // boost
+                Debug.Log("driftTime: " + driftTime);
+                StartCoroutine(Boost(140, 1f));
+            }
 
             // reset everything
             transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 0f, 0), 8f * Time.deltaTime);
             driftDirection = 0;
+            driftDirLock = false;
             driftLeft = false;
             driftRight = false;
             driftTime = 0;
@@ -227,5 +277,15 @@ public class ControllerCar : MonoBehaviour
         // move rb roation of car model to match overall rotation
         carRB.MoveRotation(transform.rotation);
 
+    }
+
+    private IEnumerator Boost(float boostForce, float boostTime)
+    {
+        while(boostTime > 0)
+        {
+            sphereRB.AddForce(transform.forward * boostForce);
+            boostTime -= Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
     }
 }
