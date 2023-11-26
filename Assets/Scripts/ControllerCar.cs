@@ -101,7 +101,7 @@ public class ControllerCar : MonoBehaviour
                 if (driftLeft && !driftRight)
                 {
                     driftDirection = turnInput < 0 ? -1.5f : -0.5f;
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, -20f, 0), 8f * Time.deltaTime);
+                    transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, -20f, 0), 8f * Time.deltaTime);
 
                     if (isCarGrounded)
                     {
@@ -111,7 +111,7 @@ public class ControllerCar : MonoBehaviour
                 else if (driftRight && !driftLeft)
                 {
                     driftDirection = turnInput > 0 ? 1.5f : 0.5f;
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 20f, 0), 8f * Time.deltaTime);
+                    transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 20f, 0), 8f * Time.deltaTime);
 
                     if (isCarGrounded)
                     {
@@ -120,7 +120,7 @@ public class ControllerCar : MonoBehaviour
                 }
                 else
                 {
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0f, 0), 8f * Time.deltaTime);
+                    transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 0f, 0), 8f * Time.deltaTime);
                 }
 
             }
@@ -132,6 +132,7 @@ public class ControllerCar : MonoBehaviour
             // give boost
 
             // reset everything
+            transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 0f, 0), 8f * Time.deltaTime);
             driftDirection = 0;
             driftLeft = false;
             driftRight = false;
