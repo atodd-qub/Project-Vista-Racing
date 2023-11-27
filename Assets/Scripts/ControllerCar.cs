@@ -14,12 +14,13 @@ public class ControllerCar : MonoBehaviour
     public bool isAccelerating;
     public bool isBraking;
     public bool isDrifting;
-    private bool isCarGrounded;
+    public bool isCarGrounded;
+    public bool isCarOnGrass;
     public float accelerateForce;
     private float accelerateBaseForce = 0f;
     public float brakeForce;
     private float brakeBaseForce = -5f;
-    private float maxAccelerateForce = 210f;
+    public float maxAccelerateForce;
     private float accelerateThreshold = 160f;
 
     public float turnInput;//temp pub
@@ -45,6 +46,7 @@ public class ControllerCar : MonoBehaviour
     public Rigidbody carRB;
 
     public LayerMask groundLayer;
+    public LayerMask grassLayer;
     public Animation carAnim;
 
     // Start is called before the first frame update
@@ -189,6 +191,21 @@ public class ControllerCar : MonoBehaviour
             driftTime = 0;
         }
 
+        // raycast ground check
+        RaycastHit hit;
+        isCarGrounded = Physics.Raycast(transform.position, -transform.up, out hit, 1f, groundLayer);
+        isCarOnGrass = Physics.Raycast(transform.position, -transform.up, out hit, 1f, grassLayer);
+
+        // set max speed based on cars location
+        if (isCarGrounded)
+        {
+            maxAccelerateForce = 210f;
+        }
+        else
+        {
+            maxAccelerateForce = 65f;
+        }
+
         // set acceleration force
         if (isAccelerating)
         {
@@ -202,11 +219,17 @@ public class ControllerCar : MonoBehaviour
             {
                 accelerateForce += 0.5f;
             }
-        } 
+        }
         else if (isBraking || accelerateForce > 0)
         {
             // decelerate
             accelerateForce += -1;
+        }
+
+        if (isCarOnGrass && accelerateForce > maxAccelerateForce)
+        {
+            // decelerate if on grass
+            accelerateForce += -5;
         }
 
         // set car's rotation
@@ -239,15 +262,11 @@ public class ControllerCar : MonoBehaviour
             accelerateForce = 0;
         }
 
-        // raycast ground check
-        RaycastHit hit;
-        isCarGrounded = Physics.Raycast(transform.position, -transform.up, out hit, 1f, groundLayer);
-
         // rotate car to be parallel to ground
         Quaternion toRotateto = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
         transform.rotation = Quaternion.Slerp(transform.rotation, toRotateto, alignToGroundTime * Time.deltaTime);
 
-        if (isCarGrounded)
+        if (isCarGrounded || isCarOnGrass)
         {
             sphereRB.drag = groundDrag;
         }
@@ -257,7 +276,7 @@ public class ControllerCar : MonoBehaviour
         }
 
         // add the current acceleration force
-        if (isCarGrounded)
+        if (isCarGrounded || isCarOnGrass)
         {
             // move car
             sphereRB.AddForce(transform.forward * accelerateForce);
