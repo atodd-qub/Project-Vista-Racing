@@ -47,7 +47,12 @@ public class ControllerCar : MonoBehaviour
 
     public LayerMask groundLayer;
     public LayerMask grassLayer;
-    public Animation carAnim;
+
+    private AudioSource carAudio;
+    public AudioClip revSound;
+    public AudioClip deaccelerateSound;
+    public AudioClip driftSound;
+    public AudioClip boostSound;
 
     // Start is called before the first frame update
     void Start()
@@ -55,6 +60,9 @@ public class ControllerCar : MonoBehaviour
         // deatch sphere rigidbody from car
         sphereRB.transform.parent = null;
         carRB.transform.parent = null;
+
+        // get components
+        carAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -141,11 +149,11 @@ public class ControllerCar : MonoBehaviour
                 {
                     //TO DO
                 }
-                if (driftTime >= 3 && driftTime < 6.5)
+                if (driftTime >= 3 && driftTime < 6)
                 {
                     // TO DO
                 }
-                if (driftTime >= 6.5)
+                if (driftTime >= 6)
                 {
                     // TO DO
                 }
@@ -165,7 +173,7 @@ public class ControllerCar : MonoBehaviour
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(50, 0.5f));
             }
-            if (driftTime >= 3 && driftTime < 6.5)
+            if (driftTime >= 3 && driftTime < 6)
             {
                 // TO DO: Particles
 
@@ -173,7 +181,7 @@ public class ControllerCar : MonoBehaviour
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(100, 0.75f));
             }
-            if (driftTime >= 6.5)
+            if (driftTime >= 6)
             {
                 // TO DO: Particles
 
@@ -219,11 +227,18 @@ public class ControllerCar : MonoBehaviour
             {
                 accelerateForce += 0.5f;
             }
+
+            // play sfx
+            //carAudio.Stop();
+            //carAudio.PlayOneShot(revSound, 0.5f);
         }
         else if (isBraking || accelerateForce > 0)
         {
             // decelerate
             accelerateForce += -1;
+
+            // play sfx
+            //carAudio.Stop();
         }
 
         if (isCarOnGrass && accelerateForce > maxAccelerateForce)
