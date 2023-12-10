@@ -148,7 +148,7 @@ public class ControllerCar : MonoBehaviour
                         sphereRB.AddForce(transform.right * -outwardsDriftForce * Time.deltaTime, ForceMode.Acceleration);
                     }
 
-                    carAudio.PlayOneShot(driftSound, 0.35f);
+                    carAudio.PlayOneShot(driftSound, 0.4f);
                 }
                 else
                 {
