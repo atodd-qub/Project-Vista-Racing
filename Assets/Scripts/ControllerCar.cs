@@ -53,6 +53,13 @@ public class ControllerCar : MonoBehaviour
     public AudioClip deaccelerateSound;
     public AudioClip driftSound;
     public AudioClip boostSound;
+    private float engineSoundPitch;
+    public float minPitch;
+    public float maxPitch;
+
+    public float currentSpeed;
+    private float minSpeed = 0;
+    private float maxSpeed = 48.2f;
 
     // Start is called before the first frame update
     void Start()
@@ -227,10 +234,6 @@ public class ControllerCar : MonoBehaviour
             {
                 accelerateForce += 0.5f;
             }
-
-            // play sfx
-            //carAudio.Stop();
-            //carAudio.PlayOneShot(revSound, 0.5f);
         }
         else if (isBraking || accelerateForce > 0)
         {
@@ -311,6 +314,11 @@ public class ControllerCar : MonoBehaviour
         // move rb roation of car model to match overall rotation
         carRB.MoveRotation(transform.rotation);
 
+        // play sfx
+        if(accelerateForce > 0)
+        {
+            EngineSound();
+        }
     }
 
     private IEnumerator Boost(float boostForce, float boostTime)
@@ -320,6 +328,29 @@ public class ControllerCar : MonoBehaviour
             sphereRB.AddForce(transform.forward * boostForce);
             boostTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
+        }
+    }
+
+    private void EngineSound()
+    {
+        currentSpeed = carRB.velocity.magnitude;
+        
+        
+        engineSoundPitch = carRB.velocity.magnitude / 60f;
+
+        if (currentSpeed < maxSpeed)
+        {
+            carAudio.pitch = minPitch;
+        }
+
+        if (currentSpeed > minSpeed && currentSpeed < maxSpeed)
+        {
+            carAudio.pitch = minPitch + engineSoundPitch;
+        }
+
+        if (currentSpeed > maxSpeed)
+        {
+            carAudio.pitch = maxPitch;
         }
     }
 }
