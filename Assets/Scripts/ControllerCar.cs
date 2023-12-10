@@ -52,7 +52,9 @@ public class ControllerCar : MonoBehaviour
     public AudioClip revSound;
     public AudioClip deaccelerateSound;
     public AudioClip driftSound;
-    public AudioClip boostSound;
+    public AudioClip boostSoundOne;
+    public AudioClip boostSoundTwo;
+    public AudioClip boostSoundThree;
     private float engineSoundPitch;
     public float minPitch;
     public float maxPitch;
@@ -183,6 +185,7 @@ public class ControllerCar : MonoBehaviour
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(50, 0.5f));
+                carAudio.PlayOneShot(boostSoundOne, 0.75f);
             }
             if (driftTime >= 3 && driftTime < 6)
             {
@@ -191,6 +194,7 @@ public class ControllerCar : MonoBehaviour
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(100, 0.75f));
+                carAudio.PlayOneShot(boostSoundTwo, 0.75f);
             }
             if (driftTime >= 6)
             {
@@ -199,6 +203,7 @@ public class ControllerCar : MonoBehaviour
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(140, 1f));
+                carAudio.PlayOneShot(boostSoundThree, 0.75f);
             }
 
             // reset everything

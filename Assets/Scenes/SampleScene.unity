@@ -4398,7 +4398,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 8d52692192a8ab14f8ee44f5c57bd931, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.6
+  m_Volume: 0.42
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -23822,7 +23822,9 @@ MonoBehaviour:
   revSound: {fileID: 8300000, guid: dd3ab90a7324b30479262b309e841511, type: 3}
   deaccelerateSound: {fileID: 0}
   driftSound: {fileID: 8300000, guid: 648525c08efae044b8729a02f0fb8f0c, type: 3}
-  boostSound: {fileID: 0}
+  boostSoundOne: {fileID: 8300000, guid: 1c150382f463374418dbadd3bbe73166, type: 3}
+  boostSoundTwo: {fileID: 8300000, guid: cf4bedbc86f5e71448cb864432126ef0, type: 3}
+  boostSoundThree: {fileID: 8300000, guid: 52f8826b8ea1ec54c8241f6ea0d21f13, type: 3}
   minPitch: 0.2
   maxPitch: 1.02
   currentSpeed: 0
