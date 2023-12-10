@@ -131,6 +131,8 @@ public class ControllerCar : MonoBehaviour
                     {
                         sphereRB.AddForce(transform.right * outwardsDriftForce * Time.deltaTime, ForceMode.Acceleration);
                     }
+
+                    carAudio.PlayOneShot(driftSound, 0.35f);
                 }
                 else if (driftRight && !driftLeft)
                 {
@@ -145,6 +147,8 @@ public class ControllerCar : MonoBehaviour
                     {
                         sphereRB.AddForce(transform.right * -outwardsDriftForce * Time.deltaTime, ForceMode.Acceleration);
                     }
+
+                    carAudio.PlayOneShot(driftSound, 0.35f);
                 }
                 else
                 {
