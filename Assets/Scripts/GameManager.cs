@@ -148,4 +148,5 @@ public class GameManager : MonoBehaviour
             cameraAudioSrc.PlayOneShot(sfxFinish, 1.5f);
         }
     }
+
 }
