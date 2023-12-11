@@ -63,6 +63,19 @@ public class ControllerCar : MonoBehaviour
     private float minSpeed = 0;
     private float maxSpeed = 48.2f;
 
+    public GameObject[] wheelsToRotate;
+    public float rotationSpeed;
+    private Animator anim;
+
+    public TrailRenderer[] trails;
+
+    public ParticleSystem[] driftParticles;
+    public Material sparks;
+    public Color drift1;
+    public Color drift2;
+    public Color drift3;
+    public ParticleSystem[] boostParticles;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -72,13 +85,7 @@ public class ControllerCar : MonoBehaviour
 
         // get components
         carAudio = GetComponent<AudioSource>();
-    }
-
-    // Update is called once per frame
-    void LateUpdate()
-    {
-        
-        
+        anim = GetComponent<Animator>();
     }
 
     private void FixedUpdate()
@@ -135,6 +142,7 @@ public class ControllerCar : MonoBehaviour
                     }
 
                     carAudio.PlayOneShot(driftSound, 0.35f);
+                    ToggleTrails(true);
                 }
                 else if (driftRight && !driftLeft)
                 {
@@ -151,6 +159,8 @@ public class ControllerCar : MonoBehaviour
                     }
 
                     carAudio.PlayOneShot(driftSound, 0.4f);
+                    ToggleTrails(true);
+                    
                 }
                 else
                 {
@@ -161,14 +171,42 @@ public class ControllerCar : MonoBehaviour
                 if (driftTime >= 1.5 && driftTime < 3)
                 {
                     //TO DO
+                    foreach (var driftParticle in driftParticles)
+                    {
+                        ParticleSystem.MainModule driftMain = driftParticle.main;
+                        driftMain.startColor = drift1;
+                        sparks.SetColor("_EmissionColor", drift1 * 2.2f);
+                        driftMain.startSize = 0.2f;
+
+                        if(!driftParticle.isPlaying)
+                        {
+                            driftParticle.Play();
+                        }
+                    }
                 }
                 if (driftTime >= 3 && driftTime < 6)
                 {
                     // TO DO
+                    foreach (var driftParticle in driftParticles)
+                    {
+                        ParticleSystem.MainModule driftMain = driftParticle.main;
+                        driftMain.startColor = drift2;
+                        sparks.SetColor("_EmissionColor", drift2 * 2.2f);
+                        driftMain.startSize = 0.3f;
+                        driftParticle.Play();
+                    }
                 }
                 if (driftTime >= 6)
                 {
                     // TO DO
+                    foreach (var driftParticle in driftParticles)
+                    {
+                        ParticleSystem.MainModule driftMain = driftParticle.main;
+                        driftMain.startColor = drift3;
+                        sparks.SetColor("_EmissionColor", drift3 * 2.2f);
+                        driftMain.startSize = 0.4f;
+                        driftParticle.Play();
+                    }
                 }
 
             }
@@ -185,7 +223,7 @@ public class ControllerCar : MonoBehaviour
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(50, 0.5f));
-                carAudio.PlayOneShot(boostSoundOne, 0.75f);
+                carAudio.PlayOneShot(boostSoundOne, 0.95f);
             }
             if (driftTime >= 3 && driftTime < 6)
             {
@@ -194,7 +232,7 @@ public class ControllerCar : MonoBehaviour
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(100, 0.75f));
-                carAudio.PlayOneShot(boostSoundTwo, 0.75f);
+                carAudio.PlayOneShot(boostSoundTwo, 0.95f);
             }
             if (driftTime >= 6)
             {
@@ -203,7 +241,7 @@ public class ControllerCar : MonoBehaviour
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(140, 1f));
-                carAudio.PlayOneShot(boostSoundThree, 0.75f);
+                carAudio.PlayOneShot(boostSoundThree, 0.95f);
             }
 
             // reset everything
@@ -213,6 +251,11 @@ public class ControllerCar : MonoBehaviour
             driftLeft = false;
             driftRight = false;
             driftTime = 0;
+            ToggleTrails(false);
+            foreach (var driftParticle in driftParticles)
+            {
+                driftParticle.Stop();
+            }
         }
 
         // raycast ground check
@@ -327,6 +370,7 @@ public class ControllerCar : MonoBehaviour
         if(accelerateForce > 0)
         {
             EngineSound();
+            SpinWheels();
         }
     }
 
@@ -336,6 +380,10 @@ public class ControllerCar : MonoBehaviour
         {
             sphereRB.AddForce(transform.forward * boostForce);
             boostTime -= Time.deltaTime;
+            foreach(var boost in boostParticles)
+            {
+                boost.Play();
+            }
             yield return new WaitForFixedUpdate();
         }
     }
@@ -360,6 +408,41 @@ public class ControllerCar : MonoBehaviour
         if (currentSpeed > maxSpeed)
         {
             carAudio.pitch = maxPitch;
+        }
+    }
+
+    private void SpinWheels()
+    {
+        foreach (var wheel in wheelsToRotate)
+        {
+            wheel.transform.Rotate(Time.deltaTime  * rotationSpeed, 0, 0, Space.Self);
+        }
+
+        if (turnInput > 0)
+        {
+            // turning right
+            anim.SetBool("goingLeft", false);
+            anim.SetBool("goingRight", true);
+        }
+        else if (turnInput < 0)
+        {
+            // turning left
+            anim.SetBool("goingLeft", true);
+            anim.SetBool("goingRight", false);
+        }
+        else
+        {
+            // straight
+            anim.SetBool("goingLeft", false);
+            anim.SetBool("goingRight", false);
+        }
+    }
+
+    private void ToggleTrails(bool toggle)
+    {
+        foreach (var trail in trails)
+        {
+            trail.emitting = toggle;
         }
     }
 }
