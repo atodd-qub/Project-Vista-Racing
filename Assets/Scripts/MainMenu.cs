@@ -45,15 +45,10 @@ public class MainMenu : MonoBehaviour
                     objHowToPlay.SetActive(false);
                     break;
                 }
-            case "Retry":
-                {
-                    // reload current scene
-                    
-                    break;
-                }
             case "MainMenu":
                 {
                     // load mainmenu
+                    Debug.Log("MainMenu load");
                     SceneManager.LoadScene("MainMenu");
                     break;
                 }

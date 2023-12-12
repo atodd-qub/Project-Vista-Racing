@@ -167,16 +167,14 @@ public class ControllerCar : MonoBehaviour
                     transform.GetChild(0).localRotation = Quaternion.Lerp(transform.GetChild(0).localRotation, Quaternion.Euler(0, 0f, 0), 8f * Time.deltaTime);
                 }
 
-                //TO DO: particle effects
                 if (driftTime >= 1.5 && driftTime < 3)
                 {
-                    //TO DO
                     foreach (var driftParticle in driftParticles)
                     {
                         ParticleSystem.MainModule driftMain = driftParticle.main;
                         driftMain.startColor = drift1;
-                        sparks.SetColor("_EmissionColor", drift1 * 2.2f);
-                        driftMain.startSize = 0.2f;
+                        sparks.SetColor("_EmissionColor", drift1 * 2.7f);
+                        driftMain.startSize = 0.3f;
 
                         if(!driftParticle.isPlaying)
                         {
@@ -186,25 +184,23 @@ public class ControllerCar : MonoBehaviour
                 }
                 if (driftTime >= 3 && driftTime < 6)
                 {
-                    // TO DO
                     foreach (var driftParticle in driftParticles)
                     {
                         ParticleSystem.MainModule driftMain = driftParticle.main;
                         driftMain.startColor = drift2;
-                        sparks.SetColor("_EmissionColor", drift2 * 2.2f);
-                        driftMain.startSize = 0.3f;
+                        sparks.SetColor("_EmissionColor", drift2 * 2.7f);
+                        driftMain.startSize = 0.4f;
                         driftParticle.Play();
                     }
                 }
                 if (driftTime >= 6)
                 {
-                    // TO DO
                     foreach (var driftParticle in driftParticles)
                     {
                         ParticleSystem.MainModule driftMain = driftParticle.main;
                         driftMain.startColor = drift3;
-                        sparks.SetColor("_EmissionColor", drift3 * 2.2f);
-                        driftMain.startSize = 0.4f;
+                        sparks.SetColor("_EmissionColor", drift3 * 2.9f);
+                        driftMain.startSize = 0.6f;
                         driftParticle.Play();
                     }
                 }
@@ -218,8 +214,6 @@ public class ControllerCar : MonoBehaviour
             // give boost
             if (driftTime >= 1.5 && driftTime < 3)
             {
-                // TO DO: Particles
-
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(50, 0.5f));
@@ -227,8 +221,6 @@ public class ControllerCar : MonoBehaviour
             }
             if (driftTime >= 3 && driftTime < 6)
             {
-                // TO DO: Particles
-
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(100, 0.75f));
@@ -236,8 +228,6 @@ public class ControllerCar : MonoBehaviour
             }
             if (driftTime >= 6)
             {
-                // TO DO: Particles
-
                 // boost
                 Debug.Log("driftTime: " + driftTime);
                 StartCoroutine(Boost(140, 1f));
@@ -270,7 +260,7 @@ public class ControllerCar : MonoBehaviour
         }
         else
         {
-            maxAccelerateForce = 65f;
+            maxAccelerateForce = 45f;
         }
 
         // set acceleration force

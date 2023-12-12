@@ -9,17 +9,24 @@ public class GameManager : MonoBehaviour
     private float raceTime;
     private float lapCount = 0;
     public float countdown = 4.0f;
+    private int minutes;
+    private string seconds;
 
     public Text raceTimeUI;
     public Text lapCountUI;
     public Text raceCountDownUI;
     public GameObject lineTrigger;
     public GameObject playerCar;
+    public GameObject finishText;
+    public GameObject btnRetry;
+    public GameObject btnMainMenu;
+
 
     private bool raceStarted;
     private bool raceFinished;
 
     public AudioSource cameraAudioSrc;
+    public AudioSource carAudioSrc;
     public AudioClip sfx3;
     public AudioClip sfx2;
     public AudioClip sfx1;
@@ -59,12 +66,27 @@ public class GameManager : MonoBehaviour
             
             // update race time
             raceTime += Time.deltaTime;
-            raceTimeUI.text = raceTime.ToString("F3");
+            minutes = ((int)raceTime / 60);
+            seconds = (raceTime % 60).ToString("F3");
+            //raceTimeUI.text = raceTime.ToString("F3");
+            if (minutes == 0)
+            {
+                raceTimeUI.text = seconds;
+            }
+            else
+            {
+                raceTimeUI.text = (minutes + ":" + seconds).ToString();
+            }
+            
         }
 
         if (raceFinished)
         {
-            raceCountDownUI.text = "FINISHED!";
+            finishText.SetActive(true);
+            btnRetry.SetActive(true);
+            btnMainMenu.SetActive(true);
+
+            carAudioSrc.Stop();
         }
     }
 
@@ -141,11 +163,11 @@ public class GameManager : MonoBehaviour
         else
         {
             // Race must be finished
-            raceFinished = true;
-            ToggleCar(false);
+            //ToggleCar(false);
             // Todo : stop car audio
 
             cameraAudioSrc.PlayOneShot(sfxFinish, 1.5f);
+            raceFinished = true;
         }
     }
 
